@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PujariDekho CRM — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f0e17;
+      overflow: hidden;
+    }
+
+    /* Animated background */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 20% 50%, #1a0533 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, #0d1f3c 0%, transparent 60%),
+                  radial-gradient(ellipse at 60% 80%, #1a0a00 0%, transparent 50%),
+                  #0f0e17;
+    }
+
+    .bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Glowing orbs */
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      animation: float 8s ease-in-out infinite;
+      pointer-events: none; z-index: 0;
+    }
+    .orb-1 { width: 400px; height: 400px; background: rgba(139,92,246,0.15); top: -100px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 300px; height: 300px; background: rgba(245,158,11,0.1); bottom: -50px; right: -50px; animation-delay: -3s; }
+    .orb-3 { width: 200px; height: 200px; background: rgba(16,185,129,0.08); top: 50%; left: 60%; animation-delay: -5s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(20px, -20px); }
+      66% { transform: translate(-10px, 15px); }
+    }
+
+    /* Card */
+    .card {
+      position: relative; z-index: 1;
+      width: 420px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    /* Brand */
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px;
+    }
+    .brand-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 15px rgba(245,158,11,0.4);
+    }
+    .brand-name { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+    .brand-name span { color: #f59e0b; }
+
+    .subtitle {
+      font-size: 13px; color: rgba(255,255,255,0.4);
+      margin-bottom: 36px; padding-left: 60px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 26px; font-weight: 600; color: #fff;
+      margin-bottom: 6px; letter-spacing: -0.5px;
+    }
+    .welcome-sub {
+      font-size: 14px; color: rgba(255,255,255,0.45);
+      margin-bottom: 32px;
+    }
+
+    /* Form */
+    .field { margin-bottom: 20px; }
+    label {
+      display: block; font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,0.5); text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 8px;
+    }
+    .input-wrap { position: relative; }
+    .input-wrap .icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; opacity: 0.4;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 13px 14px 13px 42px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: #fff; font-size: 15px; font-family: inherit;
+      outline: none; transition: all 0.2s;
+    }
+    input:focus {
+      border-color: rgba(139,92,246,0.6);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+    }
+    input::placeholder { color: rgba(255,255,255,0.25); }
+
+    .toggle-pass {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: rgba(255,255,255,0.35);
+      cursor: pointer; font-size: 15px; padding: 4px;
+      transition: color 0.2s;
+    }
+    .toggle-pass:hover { color: rgba(255,255,255,0.7); }
+
+    .btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 15px; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+      transition: all 0.2s; margin-top: 8px;
+    }
+    .btn:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); transform: translateY(-1px); box-shadow: 0 6px 25px rgba(124,58,237,0.5); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-inner { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 10px; padding: 12px 16px;
+      color: #fca5a5; font-size: 13px;
+      margin-bottom: 20px; display: none;
+      animation: shake 0.3s ease;
+    }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    .footer {
+      text-align: center; margin-top: 28px;
+      font-size: 12px; color: rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">🕉️</div>
+      <div class="brand-name">Pujari<span>Dekho</span></div>
+    </div>
+    <div class="subtitle">Admin CRM Portal</div>
+
+    <h2>Welcome back</h2>
+    <p class="welcome-sub">Sign in to manage your bookings</p>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label>Username</label>
+        <div class="input-wrap">
+          <span class="icon">👤</span>
+          <input type="text" id="username" placeholder="Enter username" autocomplete="username" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required />
+          <button type="button" class="toggle-pass" id="togglePass" title="Show/hide password">👁️</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="loginBtn">
+        <span class="btn-inner">
+          <span class="spinner" id="spinner"></span>
+          <span id="btnText">Sign In</span>
+        </span>
+      </button>
+    </form>
+
+    <div class="footer">© 2024 PujariDekho · All rights reserved</div>
+  </div>
+
+  <script>
+    // Already logged in → go to dashboard
+    if (localStorage.getItem('crm_token')) {
+      window.location.href = '/dashboard';
+    }
+
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('errorBox');
+    const loginBtn = document.getElementById('loginBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+    const togglePass = document.getElementById('togglePass');
+    const passInput = document.getElementById('password');
+
+    togglePass.addEventListener('click', () => {
+      const show = passInput.type === 'password';
+      passInput.type = show ? 'text' : 'password';
+      togglePass.textContent = show ? '🙈' : '👁️';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.style.display = 'none';
+      loginBtn.disabled = true;
+      spinner.style.display = 'block';
+      btnText.textContent = 'Signing in…';
+
+      const username = document.getElementById('username').value.trim();
+      const password = passInput.value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('crm_token', data.token);
+          localStorage.setItem('crm_user', data.username);
+          window.location.href = '/dashboard';
+        } else {
+          showError(data.error || 'Login failed. Please try again.');
+        }
+      } catch {
+        showError('Server unreachable. Please try again.');
+      } finally {
+        loginBtn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Sign In';
+      }
+    });
+
+    function showError(msg) {
+      errorBox.textContent = '⚠️ ' + msg;
+      errorBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
