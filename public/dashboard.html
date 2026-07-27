@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PujariDekho CRM — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0e17;
+      --sidebar: #13121f;
+      --card: #1a1928;
+      --card2: #1f1e2e;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8e6f0;
+      --muted: rgba(255,255,255,0.4);
+      --primary: #7c3aed;
+      --primary-light: rgba(124,58,237,0.15);
+      --success: #10b981;
+      --success-light: rgba(16,185,129,0.15);
+      --warning: #f59e0b;
+      --warning-light: rgba(245,158,11,0.15);
+      --danger: #ef4444;
+      --danger-light: rgba(239,68,68,0.15);
+      --info: #3b82f6;
+      --info-light: rgba(59,130,246,0.15);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; min-width: 240px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .brand-text { font-size: 16px; font-weight: 700; color: #fff; }
+    .brand-text span { color: #f59e0b; }
+    .brand-sub { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+    .nav-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--muted); padding: 8px 8px 4px;
+      margin-top: 8px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px; cursor: pointer;
+      font-size: 14px; color: var(--muted);
+      transition: all 0.15s; margin-bottom: 2px;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+    .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-badge {
+      margin-left: auto; background: var(--primary);
+      color: #fff; font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px; border-top: 1px solid var(--border);
+    }
+    .user-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px; border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+    }
+    .user-avatar {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .user-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .user-role { font-size: 11px; color: var(--muted); }
+    .logout-btn {
+      margin-left: auto; background: none; border: none;
+      color: var(--muted); cursor: pointer; font-size: 16px;
+      padding: 4px; border-radius: 6px; transition: all 0.15s;
+    }
+    .logout-btn:hover { color: var(--danger); background: var(--danger-light); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: 240px; flex: 1;
+      display: flex; flex-direction: column; min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(15,14,23,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .topbar-title { font-size: 18px; font-weight: 600; }
+    .topbar-sub { font-size: 13px; color: var(--muted); margin-left: 4px; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .refresh-btn {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--muted); cursor: pointer;
+      font-size: 14px; padding: 8px 12px; transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px; font-family: inherit;
+    }
+    .refresh-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+
+    .add-btn {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      border: none; border-radius: 10px; color: #fff;
+      font-size: 14px; font-weight: 600; padding: 9px 18px;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 12px rgba(124,58,237,0.35);
+      transition: all 0.2s;
+    }
+    .add-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124,58,237,0.45); }
+
+    /* ── CONTENT ── */
+    .content { padding: 28px; flex: 1; }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px;
+      transition: transform 0.2s; position: relative; overflow: hidden;
+    }
+    .stat-card::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+    }
+    .stat-card.purple::after { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
+    .stat-card.green::after { background: linear-gradient(90deg, #10b981, #059669); }
+    .stat-card.amber::after { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .stat-card.blue::after { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+    .stat-card.red::after { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .stat-card.teal::after { background: linear-gradient(90deg, #14b8a6, #0d9488); }
+
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-icon { position: absolute; right: 16px; top: 16px; font-size: 22px; opacity: 0.5; }
+    .stat-sub { font-size: 11px; color: var(--muted); }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex; gap: 12px; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+    .search-wrap .s-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.4; }
+    .search-input {
+      width: 100%; padding: 9px 12px 9px 36px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 14px;
+      font-family: inherit; outline: none; transition: all 0.2s;
+    }
+    .search-input:focus { border-color: rgba(124,58,237,0.5); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+    .search-input::placeholder { color: var(--muted); }
+
+    .filter-tabs { display: flex; gap: 4px; }
+    .tab {
+      padding: 8px 14px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      background: var(--card); border: 1px solid var(--border);
+      transition: all 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { background: var(--primary-light); color: var(--primary); border-color: rgba(124,58,237,0.3); }
+
+    .filter-select {
+      padding: 8px 12px; background: var(--card);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-size: 13px; font-family: inherit;
+      outline: none; cursor: pointer;
+    }
+    .filter-select:focus { border-color: rgba(124,58,237,0.5); }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+    .table-head {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .table-count { font-size: 13px; color: var(--muted); }
+    .table-count strong { color: var(--text); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th {
+      text-align: left; padding: 12px 16px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--muted);
+      white-space: nowrap;
+    }
+    td {
+      padding: 13px 16px; font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .client-cell { display: flex; flex-direction: column; gap: 2px; }
+    .client-name { font-weight: 500; color: var(--text); }
+    .client-phone { font-size: 12px; color: var(--muted); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .badge-inquiry { background: var(--warning-light); color: #f59e0b; }
+    .badge-confirmed { background: var(--success-light); color: var(--success); }
+    .badge-pending { background: rgba(255,255,255,0.08); color: var(--muted); }
+    .badge-received { background: var(--success-light); color: var(--success); }
+
+    .amount-cell { font-weight: 600; }
+    .amount-total { color: var(--text); }
+    .amount-token { font-size: 12px; color: var(--muted); }
+
+    .actions { display: flex; gap: 6px; }
+    .action-btn {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid var(--border); background: none;
+      cursor: pointer; font-size: 14px; display: flex;
+      align-items: center; justify-content: center;
+      transition: all 0.15s; color: var(--muted);
+    }
+    .action-btn.edit:hover { background: var(--info-light); border-color: rgba(59,130,246,0.4); color: var(--info); }
+    .action-btn.del:hover { background: var(--danger-light); border-color: rgba(239,68,68,0.4); color: var(--danger); }
+    .action-btn.view:hover { background: var(--success-light); border-color: rgba(16,185,129,0.4); color: var(--success); }
+
+    .empty-state {
+      padding: 60px 20px; text-align: center; color: var(--muted);
+    }
+    .empty-state .es-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-state p { font-size: 14px; }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: #1a1928; border: 1px solid var(--border);
+      border-radius: 20px; width: 100%; max-width: 600px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(10px); } to { opacity:1; transform:none; } }
+
+    .modal-header {
+      padding: 24px 28px 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: var(--danger-light); color: var(--danger); border-color: rgba(239,68,68,0.4); }
+
+    .modal-body { padding: 24px 28px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--muted);
+    }
+    .form-input, .form-select, .form-textarea {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-size: 14px; font-family: inherit;
+      padding: 10px 14px; outline: none; transition: all 0.2s;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: rgba(124,58,237,0.5);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+      background: rgba(255,255,255,0.08);
+    }
+    .form-input::placeholder { color: var(--muted); }
+    .form-select option { background: #1a1928; }
+    .form-textarea { resize: vertical; min-height: 72px; }
+
+    .modal-footer {
+      padding: 0 28px 24px;
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+    .btn-cancel {
+      padding: 10px 20px; border-radius: 10px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      color: var(--muted); font-size: 14px; font-weight: 500;
+      font-family: inherit; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-cancel:hover { color: var(--text); }
+    .btn-save {
+      padding: 10px 24px; border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      border: none; color: #fff; font-size: 14px; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(124,58,237,0.35);
+      transition: all 0.2s;
+    }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124,58,237,0.45); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── VIEW MODAL ── */
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .detail-item { display: flex; flex-direction: column; gap: 4px; }
+    .detail-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+    .detail-value { font-size: 14px; color: var(--text); }
+    .detail-full { grid-column: 1 / -1; }
+
+    /* ── TOAST ── */
+    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      animation: toastIn 0.3s ease;
+      min-width: 260px; max-width: 360px;
+    }
+    @keyframes toastIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+    .toast.success { border-left: 3px solid var(--success); }
+    .toast.error { border-left: 3px solid var(--danger); }
+
+    /* ── LOADING ── */
+    .loading-row td { text-align: center; padding: 40px; }
+    .loader { display: inline-block; width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; min-width: 60px; }
+      .sidebar-brand .brand-text, .sidebar-brand .brand-sub,
+      .nav-item span:not(.nav-icon), .nav-badge,
+      .user-name, .user-role, .nav-label { display: none; }
+      .sidebar-brand { padding: 16px; justify-content: center; }
+      .nav-item { justify-content: center; padding: 12px; }
+      .nav-item .nav-icon { width: auto; }
+      .user-card { justify-content: center; padding: 6px; }
+      .main { margin-left: 60px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .topbar { padding: 0 16px; }
+      .content { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🕉️</div>
+      <div>
+        <div class="brand-text">Pujari<span>Dekho</span></div>
+        <div class="brand-sub">CRM Portal</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Main</div>
+      <a class="nav-item active" onclick="showSection('dashboard')">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" onclick="showSection('records')">
+        <span class="nav-icon">📋</span>
+        <span>All Records</span>
+        <span class="nav-badge" id="totalBadge">0</span>
+      </a>
+
+      <div class="nav-label">Filters</div>
+      <a class="nav-item" onclick="showSection('records'); setFilter('inquiry')">
+        <span class="nav-icon">🔍</span>
+        <span>Inquiries</span>
+      </a>
+      <a class="nav-item" onclick="showSection('records'); setFilter('confirmed')">
+        <span class="nav-icon">✅</span>
+        <span>Confirmed</span>
+      </a>
+      <a class="nav-item" onclick="showSection('today')">
+        <span class="nav-icon">📅</span>
+        <span>Today's Pujas</span>
+      </a>
+      <a class="nav-item" onclick="showSection('followups')">
+        <span class="nav-icon">📞</span>
+        <span>Follow-ups</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div>
+          <div class="user-name" id="userName">Admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Logout">🚪</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <span class="topbar-title" id="pageTitle">Dashboard</span>
+        <span class="topbar-sub" id="pageDate"></span>
+      </div>
+      <div class="topbar-right">
+        <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh</button>
+        <button class="add-btn" onclick="openAddModal()">+ New Record</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card purple">
+          <div class="stat-label">Total Records</div>
+          <div class="stat-value" id="s-total">—</div>
+          <div class="stat-sub">All time</div>
+          <div class="stat-icon">📁</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Confirmed</div>
+          <div class="stat-value" id="s-confirmed">—</div>
+          <div class="stat-sub">Bookings done</div>
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Inquiries</div>
+          <div class="stat-value" id="s-inquiry">—</div>
+          <div class="stat-sub">Pending conversion</div>
+          <div class="stat-icon">📩</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Today's Pujas</div>
+          <div class="stat-value" id="s-today">—</div>
+          <div class="stat-sub">Scheduled today</div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-label">Token Collected</div>
+          <div class="stat-value" id="s-token">—</div>
+          <div class="stat-sub">Total received</div>
+          <div class="stat-icon">💰</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Pending Balance</div>
+          <div class="stat-value" id="s-pending">—</div>
+          <div class="stat-sub">Yet to collect</div>
+          <div class="stat-icon">⏳</div>
+        </div>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <span class="s-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search name or phone…" oninput="filterTable()" />
+        </div>
+        <div class="filter-tabs">
+          <div class="tab active" onclick="setFilter('all')" data-filter="all">All</div>
+          <div class="tab" onclick="setFilter('inquiry')" data-filter="inquiry">Inquiries</div>
+          <div class="tab" onclick="setFilter('confirmed')" data-filter="confirmed">Confirmed</div>
+        </div>
+        <select class="filter-select" id="tokenFilter" onchange="filterTable()">
+          <option value="all">All Tokens</option>
+          <option value="pending">Token Pending</option>
+          <option value="received">Token Received</option>
+        </select>
+        <select class="filter-select" id="sortBy" onchange="filterTable()">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="name">Name A–Z</option>
+          <option value="puja">Puja Date</option>
+        </select>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <div class="table-head">
+          <div class="table-count">Showing <strong id="shownCount">0</strong> of <strong id="totalCount">0</strong> records</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Puja</th>
+                <th>Date / Time</th>
+                <th>Pujari</th>
+                <th>Status</th>
+                <th>Amount</th>
+                <th>Token</th>
+                <th>Follow-up</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr class="loading-row"><td colspan="9"><div class="loader"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ADD / EDIT MODAL -->
+  <div class="overlay" id="formOverlay" onclick="closeModalOnBg(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">New Record</div>
+        <button class="modal-close" onclick="closeFormModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">Client Name *</label>
+            <input class="form-input" id="f-clientName" placeholder="Full name" required />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Phone *</label>
+            <input class="form-input" id="f-phone" placeholder="Mobile number" required />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Puja Name *</label>
+            <input class="form-input" id="f-pujaName" placeholder="e.g. Satyanarayan Puja" required />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Pujari Name</label>
+            <input class="form-input" id="f-pujariName" placeholder="Assigned pujari" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Puja Date</label>
+            <input class="form-input" id="f-pujaDate" type="date" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Puja Time</label>
+            <input class="form-input" id="f-pujaTime" type="time" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="f-status">
+              <option value="inquiry">Inquiry</option>
+              <option value="confirmed">Confirmed</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Token Status</label>
+            <select class="form-select" id="f-tokenStatus">
+              <option value="pending">Pending</option>
+              <option value="received">Received</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Total Amount (₹)</label>
+            <input class="form-input" id="f-totalAmount" type="number" placeholder="0" min="0" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Token Amount (₹)</label>
+            <input class="form-input" id="f-tokenAmount" type="number" placeholder="0" min="0" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Transaction ID</label>
+            <input class="form-input" id="f-transactionId" placeholder="UPI / bank ref" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Next Call Date</label>
+            <input class="form-input" id="f-nextCallDate" type="date" />
+          </div>
+          <div class="form-field full">
+            <label class="form-label">Notes</label>
+            <textarea class="form-textarea" id="f-notes" placeholder="Additional notes…"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeFormModal()">Cancel</button>
+        <button class="btn-save" id="saveBtn" onclick="saveRecord()">Save Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW MODAL -->
+  <div class="overlay" id="viewOverlay" onclick="closeModalOnBg(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Record Details</div>
+        <button class="modal-close" onclick="closeViewModal()">✕</button>
+      </div>
+      <div class="modal-body" id="viewBody"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeViewModal()">Close</button>
+        <button class="btn-save" onclick="editFromView()">Edit Record</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    // ── Auth check ──────────────────────────────────────────────────────────────
+    const token = localStorage.getItem('crm_token');
+    if (!token) { window.location.href = '/'; }
+
+    const username = localStorage.getItem('crm_user') || 'Admin';
+    document.getElementById('userName').textContent = username;
+    document.getElementById('userAvatar').textContent = username[0].toUpperCase();
+
+    // Date in header
+    const now = new Date();
+    document.getElementById('pageDate').textContent =
+      now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    // ── State ───────────────────────────────────────────────────────────────────
+    let allRecords = [];
+    let editingId = null;
+    let viewingRecord = null;
+    let currentFilter = 'all';
+
+    // ── API ─────────────────────────────────────────────────────────────────────
+    const api = async (method, path, body) => {
+      const res = await fetch('/api' + path, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      if (res.status === 401) { logout(); return; }
+      return res;
+    };
+
+    // ── Load stats ──────────────────────────────────────────────────────────────
+    async function loadStats() {
+      try {
+        const res = await api('GET', '/stats');
+        const d = await res.json();
+        document.getElementById('s-total').textContent = d.totalRecords;
+        document.getElementById('s-confirmed').textContent = d.confirmed;
+        document.getElementById('s-inquiry').textContent = d.inquiryCount;
+        document.getElementById('s-today').textContent = d.todayPujas;
+        document.getElementById('s-token').textContent = '₹' + fmt(d.tokenTotal);
+        document.getElementById('s-pending').textContent = '₹' + fmt(d.pendingBalance);
+        document.getElementById('totalBadge').textContent = d.totalRecords;
+      } catch {}
+    }
+
+    // ── Load records ────────────────────────────────────────────────────────────
+    async function loadRecords() {
+      try {
+        const res = await api('GET', '/inquiries');
+        allRecords = await res.json();
+        filterTable();
+      } catch {
+        showToast('Failed to load records', 'error');
+      }
+    }
+
+    // ── Filter & render ─────────────────────────────────────────────────────────
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.filter === f));
+      filterTable();
+    }
+
+    function filterTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const tokenF = document.getElementById('tokenFilter').value;
+      const sortF = document.getElementById('sortBy').value;
+
+      let rows = allRecords.filter(r => {
+        if (currentFilter !== 'all' && r.status !== currentFilter) return false;
+        if (tokenF !== 'all' && r.tokenStatus !== tokenF) return false;
+        if (search && !r.clientName.toLowerCase().includes(search) && !r.phone.includes(search)) return false;
+        return true;
+      });
+
+      rows.sort((a, b) => {
+        if (sortF === 'oldest') return a.createdAt > b.createdAt ? 1 : -1;
+        if (sortF === 'name') return a.clientName.localeCompare(b.clientName);
+        if (sortF === 'puja') return (a.pujaDate || '9999') > (b.pujaDate || '9999') ? 1 : -1;
+        return a.createdAt < b.createdAt ? 1 : -1; // newest
+      });
+
+      renderTable(rows);
+      document.getElementById('shownCount').textContent = rows.length;
+      document.getElementById('totalCount').textContent = allRecords.length;
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById('tableBody');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="es-icon">🔍</div><p>No records found</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td>
+            <div class="client-cell">
+              <span class="client-name">${esc(r.clientName)}</span>
+              <span class="client-phone">📞 ${esc(r.phone)}</span>
+            </div>
+          </td>
+          <td>${esc(r.pujaName)}</td>
+          <td>${r.pujaDate ? `<div>${fmtDate(r.pujaDate)}</div><div style="font-size:11px;color:var(--muted)">${r.pujaTime || '—'}</div>` : '<span style="color:var(--muted)">Not set</span>'}</td>
+          <td>${r.pujariName ? esc(r.pujariName) : '<span style="color:var(--muted)">—</span>'}</td>
+          <td><span class="badge badge-${r.status}">${r.status === 'confirmed' ? '✅ Confirmed' : '🔍 Inquiry'}</span></td>
+          <td>
+            <div class="amount-cell">
+              <div class="amount-total">₹${fmt(r.totalAmount)}</div>
+              <div class="amount-token">Token: ₹${fmt(r.tokenAmount)}</div>
+            </div>
+          </td>
+          <td><span class="badge badge-${r.tokenStatus}">${r.tokenStatus === 'received' ? '💚 Received' : '⏳ Pending'}</span></td>
+          <td>${r.nextCallDate ? fmtDate(r.nextCallDate) : '<span style="color:var(--muted)">—</span>'}</td>
+          <td>
+            <div class="actions">
+              <button class="action-btn view" onclick="viewRecord('${r.id}')" title="View">👁️</button>
+              <button class="action-btn edit" onclick="openEditModal('${r.id}')" title="Edit">✏️</button>
+              <button class="action-btn del" onclick="deleteRecord('${r.id}')" title="Delete">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ── View ─────────────────────────────────────────────────────────────────────
+    function viewRecord(id) {
+      viewingRecord = allRecords.find(r => r.id === id);
+      if (!viewingRecord) return;
+      const r = viewingRecord;
+      document.getElementById('viewBody').innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Client Name</span><span class="detail-value">${esc(r.clientName)}</span></div>
+          <div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">${esc(r.phone)}</span></div>
+          <div class="detail-item"><span class="detail-label">Puja Name</span><span class="detail-value">${esc(r.pujaName)}</span></div>
+          <div class="detail-item"><span class="detail-label">Pujari</span><span class="detail-value">${esc(r.pujariName || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Puja Date</span><span class="detail-value">${r.pujaDate ? fmtDate(r.pujaDate) : '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Puja Time</span><span class="detail-value">${r.pujaTime || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value"><span class="badge badge-${r.status}">${r.status}</span></span></div>
+          <div class="detail-item"><span class="detail-label">Token Status</span><span class="detail-value"><span class="badge badge-${r.tokenStatus}">${r.tokenStatus}</span></span></div>
+          <div class="detail-item"><span class="detail-label">Total Amount</span><span class="detail-value">₹${fmt(r.totalAmount)}</span></div>
+          <div class="detail-item"><span class="detail-label">Token Amount</span><span class="detail-value">₹${fmt(r.tokenAmount)}</span></div>
+          <div class="detail-item"><span class="detail-label">Transaction ID</span><span class="detail-value">${esc(r.transactionId || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Next Call</span><span class="detail-value">${r.nextCallDate ? fmtDate(r.nextCallDate) : '—'}</span></div>
+          <div class="detail-item detail-full"><span class="detail-label">Notes</span><span class="detail-value">${esc(r.notes || '—')}</span></div>
+          <div class="detail-item detail-full"><span class="detail-label">Created At</span><span class="detail-value">${r.createdAt}</span></div>
+        </div>
+      `;
+      document.getElementById('viewOverlay').classList.add('open');
+    }
+
+    function editFromView() {
+      closeViewModal();
+      if (viewingRecord) openEditModal(viewingRecord.id);
+    }
+
+    function closeViewModal() { document.getElementById('viewOverlay').classList.remove('open'); }
+
+    // ── Add / Edit Modal ─────────────────────────────────────────────────────────
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = 'New Record';
+      clearForm();
+      document.getElementById('formOverlay').classList.add('open');
+    }
+
+    function openEditModal(id) {
+      const r = allRecords.find(x => x.id === id);
+      if (!r) return;
+      editingId = id;
+      document.getElementById('modalTitle').textContent = 'Edit Record';
+      document.getElementById('f-clientName').value = r.clientName || '';
+      document.getElementById('f-phone').value = r.phone || '';
+      document.getElementById('f-pujaName').value = r.pujaName || '';
+      document.getElementById('f-pujariName').value = r.pujariName || '';
+      document.getElementById('f-pujaDate').value = r.pujaDate ? r.pujaDate.slice(0,10) : '';
+      document.getElementById('f-pujaTime').value = r.pujaTime || '';
+      document.getElementById('f-status').value = r.status || 'inquiry';
+      document.getElementById('f-tokenStatus').value = r.tokenStatus || 'pending';
+      document.getElementById('f-totalAmount').value = r.totalAmount || 0;
+      document.getElementById('f-tokenAmount').value = r.tokenAmount || 0;
+      document.getElementById('f-transactionId').value = r.transactionId || '';
+      document.getElementById('f-nextCallDate').value = r.nextCallDate ? r.nextCallDate.slice(0,10) : '';
+      document.getElementById('f-notes').value = r.notes || '';
+      document.getElementById('formOverlay').classList.add('open');
+    }
+
+    function clearForm() {
+      ['clientName','phone','pujaName','pujariName','pujaDate','pujaTime','totalAmount','tokenAmount','transactionId','nextCallDate','notes']
+        .forEach(f => document.getElementById('f-'+f).value = '');
+      document.getElementById('f-status').value = 'inquiry';
+      document.getElementById('f-tokenStatus').value = 'pending';
+    }
+
+    function closeFormModal() { document.getElementById('formOverlay').classList.remove('open'); }
+
+    function closeModalOnBg(e) {
+      if (e.target === e.currentTarget) {
+        closeFormModal();
+        closeViewModal();
+      }
+    }
+
+    // ── Save ─────────────────────────────────────────────────────────────────────
+    async function saveRecord() {
+      const clientName = document.getElementById('f-clientName').value.trim();
+      const phone = document.getElementById('f-phone').value.trim();
+      const pujaName = document.getElementById('f-pujaName').value.trim();
+      if (!clientName || !phone || !pujaName) { showToast('Client Name, Phone and Puja Name are required', 'error'); return; }
+
+      const body = {
+        clientName, phone, pujaName,
+        pujariName: document.getElementById('f-pujariName').value.trim() || null,
+        pujaDate: document.getElementById('f-pujaDate').value || null,
+        pujaTime: document.getElementById('f-pujaTime').value || null,
+        status: document.getElementById('f-status').value,
+        tokenStatus: document.getElementById('f-tokenStatus').value,
+        totalAmount: Number(document.getElementById('f-totalAmount').value) || 0,
+        tokenAmount: Number(document.getElementById('f-tokenAmount').value) || 0,
+        transactionId: document.getElementById('f-transactionId').value.trim() || null,
+        nextCallDate: document.getElementById('f-nextCallDate').value || null,
+        notes: document.getElementById('f-notes').value.trim() || null,
+      };
+
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+
+      try {
+        if (editingId) {
+          const res = await api('PUT', '/inquiries/' + editingId, body);
+          if (res.ok) { showToast('Record updated', 'success'); }
+          else { showToast('Update failed', 'error'); }
+        } else {
+          body.id = 'INQ-' + Date.now();
+          body.createdAt = new Date().toISOString();
+          const res = await api('POST', '/inquiries', body);
+          if (res.ok) { showToast('Record added', 'success'); }
+          else { showToast('Failed to add', 'error'); }
+        }
+        closeFormModal();
+        await refreshAll();
+      } catch {
+        showToast('Network error', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Record';
+      }
+    }
+
+    // ── Delete ───────────────────────────────────────────────────────────────────
+    async function deleteRecord(id) {
+      const r = allRecords.find(x => x.id === id);
+      if (!r) return;
+      if (!confirm(`Delete record for "${r.clientName}"?\nThis cannot be undone.`)) return;
+      try {
+        const res = await api('DELETE', '/inquiries/' + id);
+        if (res.ok) { showToast('Record deleted', 'success'); await refreshAll(); }
+        else { showToast('Delete failed', 'error'); }
+      } catch { showToast('Network error', 'error'); }
+    }
+
+    // ── Section nav ──────────────────────────────────────────────────────────────
+    function showSection(sec) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('pageTitle').textContent =
+        sec === 'dashboard' ? 'Dashboard' :
+        sec === 'records' ? 'All Records' :
+        sec === 'today' ? "Today's Pujas" : 'Follow-ups';
+
+      if (sec === 'today') {
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById('searchInput').value = '';
+        setFilter('all');
+        // filter by today puja date
+        const rows = allRecords.filter(r => r.pujaDate && r.pujaDate.startsWith(today));
+        renderTable(rows);
+        document.getElementById('shownCount').textContent = rows.length;
+        document.getElementById('totalCount').textContent = allRecords.length;
+        return;
+      }
+      if (sec === 'followups') {
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById('searchInput').value = '';
+        setFilter('all');
+        const rows = allRecords.filter(r => r.nextCallDate && r.nextCallDate.startsWith(today));
+        renderTable(rows);
+        document.getElementById('shownCount').textContent = rows.length;
+        document.getElementById('totalCount').textContent = allRecords.length;
+        return;
+      }
+      if (sec === 'records') { setFilter('all'); }
+    }
+
+    // ── Refresh all ──────────────────────────────────────────────────────────────
+    async function refreshAll() {
+      await Promise.all([loadStats(), loadRecords()]);
+    }
+
+    // ── Logout ───────────────────────────────────────────────────────────────────
+    function logout() {
+      localStorage.removeItem('crm_token');
+      localStorage.removeItem('crm_user');
+      window.location.href = '/';
+    }
+
+    // ── Toast ────────────────────────────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+      const wrap = document.getElementById('toastWrap');
+      const t = document.createElement('div');
+      t.className = 'toast ' + type;
+      t.innerHTML = (type === 'success' ? '✅' : '❌') + ' ' + msg;
+      wrap.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────────
+    function fmt(n) { return Number(n || 0).toLocaleString('en-IN'); }
+    function fmtDate(d) { if (!d) return '—'; const p = d.slice(0,10).split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
+    function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
+    // ── Init ─────────────────────────────────────────────────────────────────────
+    refreshAll();
+  </script>
+</body>
+</html>
