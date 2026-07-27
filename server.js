@@ -20,8 +20,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET || 'pujari-dekho-jwt-secret-2024';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'Pujaridekho';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Pujaridekho@#2026';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'Prince';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Prince@2001';
 
 if (!MONGODB_URI) {
   console.error('❌ MONGODB_URI not set in .env');
